@@ -1,0 +1,216 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seafood Cost Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+    max-width: 800px;
+    margin: auto;
+    text-align: center;
+    background-color: white;
+    padding: 28px 28px 62px 21px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+        /* Banner and logo styles */
+        #banner {
+    width: 100%;
+    height: 121px;
+}
+        #logo {
+            width: 150px;
+            height: auto;
+            margin-top: 20px;
+        }
+        h2 {
+    color: #333;
+    font-size: 28px;
+    margin-top: 51px;
+}
+        nav {
+            margin-top: 20px;
+        }
+        nav button {
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #0044cc;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        nav button:hover {
+            background-color: #0033a0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Footer styles */
+       footer {
+    background-color: #006699;
+    color: white;
+    padding: 2px;
+    text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+    margin: 46px 60px 23px 108px;
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Banner Image -->
+        <img src="banner.jpg" alt="Ark Seafoods Banner" id="banner">
+       
+        <h2>Cost Calculator</h2>
+        
+        <!-- Navigation Buttons -->
+        <nav>
+            <button onclick="showPage('products')">Product List</button>
+            <button onclick="showPage('rateChart')">Rate Chart</button>
+            <button onclick="showPage('variables')">Variables</button>
+            <button onclick="showPage('costCalc')">Cost Calculation</button>
+        </nav>
+
+        <div id="content">
+            
+            <!-- Product List Section -->
+            <div id="products" class="hidden">
+                <h3>Product List</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Smallest Size</th>
+                            <th>Largest Size</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTable"></tbody>
+                </table>
+                <button onclick="addProduct()">Add Product</button>
+            </div>
+
+            <!-- Rate Chart Section -->
+            <div id="rateChart" class="hidden">
+                <h3>Rate Chart</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Rate (Tk.)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rateTable"></tbody>
+                </table>
+                <button onclick="addRate()">Add Rate</button>
+            </div>
+
+            <!-- Variables Section -->
+            <div id="variables" class="hidden">
+                <h3>Variables</h3>
+                <table>
+                    <tr><td>USD Rate</td><td><input id="usdRate" type="number" value="122"></td></tr>
+                    <tr><td>Variable Overhead</td><td><input id="varOverhead" type="number" value="100"></td></tr>
+                    <tr><td>Fixed Overhead</td><td><input id="fixOverhead" type="number" value="80"></td></tr>
+                    <tr><td>Subsidy Rate (%)</td><td><input id="subsidyRate" type="number" value="8"></td></tr>
+                    <tr><td>Freight per Kg ($)</td><td><input id="freight" type="number" value="0.20"></td></tr>
+                </table>
+            </div>
+
+            <!-- Cost Calculation Section -->
+            <div id="costCalc" class="hidden">
+                <h3>Cost Calculation</h3>
+                <label>Select Product:</label>
+                <select id="productSelect"></select>
+                <button onclick="calculateCost()">Calculate Cost</button>
+                <p id="costOutput"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Function to Show Specific Page
+        function showPage(page) {
+            document.querySelectorAll(".hidden").forEach(el => el.style.display = "none");
+            document.getElementById(page).style.display = "block";
+        }
+
+        // Function to Add Product and Update Dropdown
+        function addProduct() {
+            let table = document.getElementById("productTable");
+            let row = table.insertRow();
+            let productName = `Product ${table.rows.length + 1}`;
+            row.innerHTML = `<td>${productName}</td><td>10</td><td>20</td>`;
+
+            // Add product to dropdown
+            let productSelect = document.getElementById("productSelect");
+            let option = document.createElement("option");
+            option.value = productName;
+            option.textContent = productName;
+            productSelect.appendChild(option);
+        }
+
+        // Function to Add Rate to Rate Chart
+        function addRate() {
+            let table = document.getElementById("rateTable");
+            let row = table.insertRow();
+            row.innerHTML = `<td>${table.rows.length + 4}</td><td>1000</td>`;
+        }
+
+        // Function to Calculate Cost
+        function calculateCost() {
+            let usdRate = parseFloat(document.getElementById("usdRate").value);
+            let varOverhead = parseFloat(document.getElementById("varOverhead").value);
+            let fixOverhead = parseFloat(document.getElementById("fixOverhead").value);
+            let subsidyRate = parseFloat(document.getElementById("subsidyRate").value) / 100;
+            let freight = parseFloat(document.getElementById("freight").value);
+            
+            let rawMaterialCost = 1100; // Placeholder value
+            let fobTk = rawMaterialCost + varOverhead + fixOverhead;
+            let fobUsd = fobTk / usdRate;
+            let subsidy = fobUsd * subsidyRate;
+            let netFobUsd = fobUsd - subsidy;
+            let finalCost = netFobUsd + freight;
+            
+            document.getElementById("costOutput").innerText = `Final Cost: $${finalCost.toFixed(2)}`;
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Ark Seafoods. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
